@@ -8,7 +8,8 @@
 <body style="margin: 0; padding: 24px 16px; background-color: #f5f5f5; font-family: Arial, Helvetica, sans-serif; color: #101820;">
 <div style="max-width: 720px; margin: 0 auto;">
 <h1 style="font-size: 22px; margin: 0 0 6px;">העתקת כרטיס למייל</h1>
-<p style="margin: 0 0 16px; color: #555;">1. העתק מ-Open WebUI את בלוק "קוד HTML של הכרטיס".&nbsp; 2. הדבק כאן.&nbsp; 3. לחץ "העתק כרטיס למייל" והדבק בגוף המייל.</p>
+<p style="margin: 0 0 16px; color: #555;">1. לחץ Copy על "קוד HTML של הכרטיס".&nbsp; 2. לחץ "הדבק מהלוח".&nbsp; 3. לחץ "העתק כרטיס למייל" והדבק בגוף המייל.</p>
+<div style="margin: 0 0 12px;"><button id="paste" style="font-size: 16px; font-weight: 700; color: #4c37e5; background-color: #f2f2ff; border: 1px solid #4c37e5; border-radius: 30px; padding: 12px 28px; cursor: pointer;">הדבק מהלוח</button></div>
 <textarea id="src" placeholder="הדבק כאן את קוד ה-HTML..." style="width: 100%; box-sizing: border-box; height: 140px; padding: 12px; font-family: monospace; font-size: 13px; direction: ltr; text-align: left; border: 1px solid #ccc; border-radius: 10px;"></textarea>
 <div style="display: flex; gap: 10px; align-items: center; margin: 12px 0 20px; flex-wrap: wrap;">
 <button id="copy" style="font-size: 16px; font-weight: 700; color: #fff; background-color: #4c37e5; border: none; border-radius: 30px; padding: 12px 28px; cursor: pointer;">העתק כרטיס למייל</button>
@@ -38,6 +39,18 @@ function render() {
 }
 
 src.addEventListener('input', render);
+
+document.getElementById('paste').onclick = function () {
+  if (!navigator.clipboard || !navigator.clipboard.readText) {
+    status.style.color = '#c0392b'; status.textContent = 'הדפדפן לא מאפשר - הדבק ידנית בתיבה (Cmd+V)'; src.focus(); return;
+  }
+  navigator.clipboard.readText().then(function (t) {
+    src.value = t; render();
+    if (!cardHtml()) { status.style.color = '#c0392b'; status.textContent = 'הלוח ריק - קודם לחץ Copy על קוד ה-HTML'; }
+  }, function () {
+    status.style.color = '#c0392b'; status.textContent = 'אין הרשאה ללוח - הדבק ידנית בתיבה (Cmd+V)'; src.focus();
+  });
+};
 
 document.getElementById('clear').onclick = function () {
   src.value = '';
